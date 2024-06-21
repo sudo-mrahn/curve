@@ -44,7 +44,7 @@ def rename(e: events.GenericEventArguments) -> None:
     for row in rows:
         if row['id'] == e.args['id']:
             row.update(e.args)
-    ui.notify(f'Updated rows to: {table.rows}')
+    # ui.notify(f'Updated rows to: {table.rows}')
     table.update()
 
 
