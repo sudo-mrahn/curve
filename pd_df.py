@@ -18,7 +18,7 @@ def update(*, df: pd.DataFrame, r: int, c: int, value):
 with ui.grid(rows=len(df.index)+1).classes('grid-flow-col'):
     for c, col in enumerate(df.columns):
         ui.label(col).classes('font-bold')
-        for r, row in enumerate(df.loc[;, col]):
+        for r, row in enumerate(df.loc[:, col]):
             if is_bool_dtype(df[col].dtype):
                 cls = ui.checkbox
             elif is_numeric_dtype(df[col].dtype):

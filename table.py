@@ -3,17 +3,17 @@ from nicegui import events, ui
 import matplotlib.pyplot as plt
 import curve
 import pandas as pd
+import numpy as np
 
 columns = [
     {'name': 'name', 'label': 'Name', 'field': 'name', 'align': 'left'},
     {'name': 'score', 'label': 'Score', 'field': 'score'},
 ]
 rows = [
-    # {'id': 0, 'name': 'Alice', 'score': 78},
-    # {'id': 1, 'name': 'Bob', 'score': 91},
-    # {'id': 2, 'name': 'Carol', 'score': 20},
+    {'id': 0, 'name': 'Alice', 'score': 78},
+    {'id': 1, 'name': 'Bob', 'score': 91},
+    {'id': 2, 'name': 'Carol', 'score': 20},
 ]
-
 
 def add_row() -> None:
     new_id = max((dx['id'] for dx in rows), default=-1) + 1
@@ -21,6 +21,11 @@ def add_row() -> None:
     ui.notify(f'Added new row with ID {new_id}')
     table.update()
 
+def get_data() -> None:
+    data = np.empty(len(rows))
+    for i in range(len(rows)):
+        data[i] = table.rows[i]['score']
+    ui.notify('average: ' + str(round(np.average(data))))
 
 def rename(e: events.GenericEventArguments) -> None:
     for row in rows:
@@ -76,9 +81,6 @@ with table.add_slot('bottom-row'):
 table.on('rename', rename)
 table.on('delete', delete)
 
-with ui.pyplot():
-    
-
 # with ui.pyplot():
 
 #     fig, axs = plt.subplots(nrows=4, ncols=2)
@@ -103,4 +105,17 @@ with ui.pyplot():
 #         axs[i,1].legend(['min: ' + str(round(min(arr[i])))])
 
 
+ui.button('compute curve', on_click=lambda: (
+    ui.notify('data: '),
+    get_data()
+))
+
 ui.run()
+
+
+
+
+
+
+
+
