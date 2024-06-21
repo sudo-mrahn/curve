@@ -19,7 +19,7 @@ rows = [
 def add_row() -> None:
     new_id = max((dx['id'] for dx in rows), default=-1) + 1
     rows.append({'id': new_id, 'name': 'Student', 'score': 100})
-    ui.notify(f'Added new row with ID {new_id}')
+    # ui.notify(f'Added new row with ID {new_id}')
     table.update()
 
 def get_data() -> None:
@@ -54,7 +54,7 @@ def delete(e: events.GenericEventArguments) -> None:
     table.update()
 
 
-table = ui.table(columns=columns, rows=rows, row_key='name').classes('w-1/3')
+table = ui.table(columns=columns, rows=rows, row_key='name').classes('w-2/3')
 table.add_slot('header', r'''
     <q-tr :props="props">
         <q-th auto-width />
@@ -95,11 +95,10 @@ table.on('rename', rename)
 table.on('delete', delete)
 
 def visualize():
-    with ui.pyplot():
+    with ui.pyplot() as plot:
         fig, axs = plt.subplots(nrows=4, ncols=2)
         fig.set_size_inches(10,8)
         arr = compute()
-        print(arr[3])
         grades = []
         for i in range(len(arr)):
             grades.append(
@@ -117,12 +116,13 @@ def visualize():
             grades[i] = grades[i][::-1]
             grades[i].plot(kind='bar', ax=axs[i,1])
             axs[i,1].legend(['min: ' + str(round(min(arr[i])))])
-        plt.show()
+        plot.fig = fig
+        ui.button('clear figure', on_click=lambda: fig.clf())
 
 
 ui.button('compute curve', on_click=lambda: (
     ui.notify('computing curve...'),
-    visualize()
+    visualize(),
 ))
 
 ui.run()
