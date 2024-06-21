@@ -31,8 +31,11 @@ def scalemed(arr, fl):
         median = np.median(arr)
         sorted = np.sort(arr)
         clipped = sorted[sorted < median]
+        # print('what is clipped? ' + str(clipped))
         left = sorted[sorted >= median]
+        # print('what is left' + str(left))
         curved = scalemax(clipped, fl)
+        # print('what is curved' + str(curved))
         return np.append(left,curved)
 
 

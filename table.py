@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import curve
 import pandas as pd
 import numpy as np
+import show
 
 columns = [
     {'name': 'name', 'label': 'Name', 'field': 'name', 'align': 'left'},
@@ -26,6 +27,18 @@ def get_data() -> None:
     for i in range(len(rows)):
         data[i] = table.rows[i]['score']
     ui.notify('average: ' + str(round(np.average(data))))
+    return data
+
+def compute() -> None:
+    fl = 50
+    orig = get_data()
+    floor = curve.floor(orig, fl)
+    max = curve.scalemax(orig, fl)
+    med = curve.scalemed(orig, fl)
+    arr = [orig, floor, max, med]
+    return arr
+
+
 
 def rename(e: events.GenericEventArguments) -> None:
     for row in rows:
@@ -81,33 +94,35 @@ with table.add_slot('bottom-row'):
 table.on('rename', rename)
 table.on('delete', delete)
 
-# with ui.pyplot():
-
-#     fig, axs = plt.subplots(nrows=4, ncols=2)
-#     fig.set_size_inches(12,10)
-#     arr = [orig, floor, max, med]
-#     grades = [
-#         pd.DataFrame.from_dict(curve.grades(orig), orient='index'), 
-#         pd.DataFrame.from_dict(curve.grades(floor), orient='index'), 
-#         pd.DataFrame.from_dict(curve.grades(max), orient='index'), 
-#         pd.DataFrame.from_dict(curve.grades(med), orient='index')]
-#     bins=80
-#     names = ['raw scores', 'simple floor', 'scale to max', 'scale to median']
-#     for i in range(4):
-#         axs[i,0].hist(arr[i], bins, density=True, label='avg: ' + str(round(np.average(arr[i]))))
-#         axs[i,0].axvline(x=np.median(arr[i]), ymin=0, ymax=0.85, color='red', label='median: ' + str(round(np.median(arr[i]))))
-#         axs[i,0].set_xlim([min(arr[0]), 100])
-#         axs[i,0].set_ylabel(names[i])
-#         axs[i,0].yaxis.label.set_fontsize(14)
-#         axs[i,0].legend()
-#         grades[i] = grades[i][::-1]
-#         grades[i].plot(kind='bar', ax=axs[i,1])
-#         axs[i,1].legend(['min: ' + str(round(min(arr[i])))])
+def visualize():
+    with ui.pyplot():
+        fig, axs = plt.subplots(nrows=4, ncols=2)
+        fig.set_size_inches(10,8)
+        arr = compute()
+        print(arr[3])
+        grades = []
+        for i in range(len(arr)):
+            grades.append(
+                pd.DataFrame.from_dict(curve.grades(arr[i]), 
+                                    orient='index'))
+        bins=80
+        names = ['raw scores', 'simple floor', 'scale to max', 'scale to median']
+        for i in range(4):
+            axs[i,0].hist(arr[i], bins, density=True, label='avg: ' + str(round(np.average(arr[i]))))
+            axs[i,0].axvline(x=np.median(arr[i]), ymin=0, ymax=0.85, color='red', label='median: ' + str(round(np.median(arr[i]))))
+            axs[i,0].set_xlim([min(arr[0]), 100])
+            axs[i,0].set_ylabel(names[i])
+            axs[i,0].yaxis.label.set_fontsize(10)
+            axs[i,0].legend()
+            grades[i] = grades[i][::-1]
+            grades[i].plot(kind='bar', ax=axs[i,1])
+            axs[i,1].legend(['min: ' + str(round(min(arr[i])))])
+        plt.show()
 
 
 ui.button('compute curve', on_click=lambda: (
-    ui.notify('data: '),
-    get_data()
+    ui.notify('computing curve...'),
+    visualize()
 ))
 
 ui.run()
