@@ -17,7 +17,7 @@ def compare4(orig, floor, max, med):
     names = ['raw scores', 'simple floor', 'scale to max', 'scale to median']
     for i in range(4):
         axs[i,0].hist(arr[i], bins, density=True, label='avg: ' + str(round(np.average(arr[i]))))
-        axs[i,0].axvline(x=np.median(arr[i]), ymin=0, ymax=0.85, color='purple', label='median: ' + str(round(np.median(arr[i]))))
+        axs[i,0].axvline(x=np.median(arr[i]), ymin=0, ymax=0.85, color='red', label='median: ' + str(round(np.median(arr[i]))))
         axs[i,0].set_xlim([min(arr[0]), 100])
         axs[i,0].set_ylabel(names[i])
         axs[i,0].yaxis.label.set_fontsize(14)
